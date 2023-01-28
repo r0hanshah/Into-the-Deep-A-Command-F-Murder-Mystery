@@ -34,7 +34,7 @@ def preamble():
 
 def getContextSentence(keyword, scrubbed, wordList):
   try:
-    wordIndex = wordList.index(keyword)
+    wordIndex = scrubbed.index(keyword)
   except:
     printer("ERROR: KEYWORD NOT FOUND", style="bold red")
     return
@@ -60,14 +60,23 @@ def main():
   keywords = {"test",}
   story = "yadda yadda yadda important words here. This sentence contains test, the whole thing should be present. These should show, these should not."
   storyList = story.split()
-  storyListScrubbed = storyList
+  storyListScrubbed = []
 
-  for word in storyListScrubbed:
-    print(word)
+  for word in storyList:
     word = word.lower()
     word = re.sub("\W","", word)
-    print(f"scrubbed: {word}")
+    storyListScrubbed.append(word)
 
+
+  for word in storyList:
+    print(f"{word} ",end="")
+
+  print("\n")
+
+  for word in storyListScrubbed:
+    print(f"{word} ",end="")
+
+  print("\n")
 
   # preamble()
   keywordSearch(storyListScrubbed, storyList)
