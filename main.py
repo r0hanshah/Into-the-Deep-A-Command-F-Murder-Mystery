@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import time, sys, random  
+import time, sys, random, re
 from rich import print
 from rich.panel import Panel
 from rich.text import Text
@@ -64,8 +64,12 @@ def main():
 
   for word in storyListScrubbed:
     print(word)
+    word = word.lower()
+    word = re.sub("\W","", word)
+    print(f"scrubbed: {word}")
 
-  preamble()
+
+  # preamble()
   keywordSearch(storyListScrubbed, storyList)
 
 
