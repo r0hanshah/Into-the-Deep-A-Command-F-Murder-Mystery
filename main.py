@@ -32,32 +32,19 @@ def preamble():
   printer("CONCEALING AND ENCRYPTING CREW LOGS")
   printer("FOR THE PROTECTION OF STATE SECRETS, CREW LOGS ARE ONLY AVAILABLE THROUGH KEYWORD SEARCH. WORKERS OF THE WORLD, UNITE.")
 
-def keywordSearch():
+def getContextSentence(keyword, scrubbed, wordList):
+  try:
+    wordIndex = wordList.index(keyword)
+  except:
+    printer("ERROR: KEYWORD NOT FOUND", style="bold red")
+    return
+
+  # find previous period to see start of last sentence
+  printer(f"{keyword} found at index {wordIndex}")
+
+def keywordSearch(scrubbed,wordList):
   chosenWord = input("ENTER KEYWORD: ")
-
-
-
-preamble()
-keywordSearch()
-
-
-keywords = {"test",}
-
-story = "yadda yadda yadda important words here. This sentence contains test, the whole thing should be present. These should show, these should not."
-storyList = story.split()
-
-def getContextSentence(keyword):
-  wordIndex = storyList.index(keyword)
-
-  if wordIndex == -1:
-    printer("ERROR: KEYWORD NOT FOUND")
-  else:
-    # find previous period to see start of last sentence
-    printer(f"{keyword} found at index {wordIndex}")
-
-
-getContextSentence("test")
-
+  getContextSentence(chosenWord, scrubbed, wordList)
 
 def chooseATextToReturn(ListOfPairs):
   fullCount = 0
@@ -69,3 +56,17 @@ def chooseATextToReturn(ListOfPairs):
   chosenNumber = randint(0, fullCount - 1)
   return ListOfPairs[chosenNumber][1]
   
+def main():
+  keywords = {"test",}
+  story = "yadda yadda yadda important words here. This sentence contains test, the whole thing should be present. These should show, these should not."
+  storyList = story.split()
+  storyListScrubbed = storyList
+
+  for word in storyListScrubbed:
+    print(word)
+
+  preamble()
+  keywordSearch(storyListScrubbed, storyList)
+
+
+main()
