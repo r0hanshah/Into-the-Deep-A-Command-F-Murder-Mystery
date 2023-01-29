@@ -5,7 +5,8 @@
 
 ## General info
 This is our entry for SwampHacks IX 2023! We made a text-based murder mystery story with a unique traversal method.
-	
+
+Search unique keywords to slowly reveal more and more of the story. 
     
 ## Technologies
 Project is created with:
