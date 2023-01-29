@@ -11,7 +11,7 @@ indexListPrinted = []
 
 def printer(str, style= "bold green"):
     for letter in str:  
-        modded_letter = Text(letter, style, justify="center")
+        modded_letter = Text(letter, style)
         print(modded_letter, end="", flush=True)
         time.sleep(0.001)
         # make time slower later 
