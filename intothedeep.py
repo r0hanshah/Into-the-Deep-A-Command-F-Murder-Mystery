@@ -34,7 +34,7 @@ def printer(str, style= "bold green"):
       modded_letter = Text(letter, style)
       print(modded_letter, end="", flush=True)
       time.sleep(0.05)
-      # make time slower later 
+      # make time slower later 0.05
   print("\n")
 
 
@@ -102,9 +102,6 @@ def counterOfWordInputted(wordChosen, scrubbed):
 
 
 def getContextSentence(keyword, scrubbed, wordList):
-  if keyword == "superior":
-    printer("ERROR: KEYWORD NOT FOUND", style="bold red")
-    return
   macroList = []
   scrubbed_two = copy.deepcopy(scrubbed)
   numberForTheLoop = counterOfWordInputted(keyword, scrubbed)
@@ -189,6 +186,8 @@ def chooseATextToReturn(macrolist):
       indexList.append(i)
   count = 10
   while count > 1:
+    if fullCount == 0:
+      return macrolist[0][0]
     chosenNumber = randint(0, fullCount - 1)
     if macrolist[indexList[chosenNumber]][2] not in indexListPrinted:
       indexListPrinted.append(macrolist[indexList[chosenNumber]][2])
