@@ -7,10 +7,11 @@ from rich.prompt import Prompt
 
 from random import randint
 
+indexListPrinted = []
 
 def printer(str, style= "bold green"):
     for letter in str:  
-        modded_letter = Text(letter, style)
+        modded_letter = Text(letter, style, justify="center")
         print(modded_letter, end="", flush=True)
         time.sleep(0.001)
         # make time slower later 
@@ -45,20 +46,25 @@ keywords = {"test",}
 
 story = "yadda yadda yadda important words here. This sentence contains test, the whole thing should be present. These should show, these should not."
 storyList = story.split()
+print(storyList)
 
 def getContextSentence(keyword):
   wordIndex = storyList.index(keyword)
 
   if wordIndex == -1:
-    printer("ERROR: KEYWORD NOT FOUND")
+    printer("ERROR: KEYWORD NOT FOUND", style ="bold red")
   else:
-    # find previous period to see start of last sentence
+    # find previous period to see start of las
+    # 
+    # t sentence
     printer(f"{keyword} found at index {wordIndex}")
 
 
 getContextSentence("test")
 
 
+# takes in list of size two lists, with text and count of other keywords associated with it
+# chooses word based off probabilty and checks to make sure we haven't already printed
 def chooseATextToReturn(ListOfPairs):
   fullCount = 0
   indexList =[]
@@ -66,6 +72,11 @@ def chooseATextToReturn(ListOfPairs):
     fullCount += ListOfPairs[i][1]
     for j in range(ListOfPairs[i][1]):
       indexList.append(i)
-  chosenNumber = randint(0, fullCount - 1)
-  return ListOfPairs[chosenNumber][1]
-  
+  count = 100
+  while count > 1:
+    chosenNumber = randint(0, fullCount - 1)
+    if ListOfPairs[indexList[chosenNumber]][2] not in indexListPrinted: 
+      return ListOfPairs[indexList[chosenNumber]][0]
+    count -= 1
+    return ListOfPairs[0][0]
+
