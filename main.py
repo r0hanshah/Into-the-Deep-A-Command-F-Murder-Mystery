@@ -4,10 +4,12 @@ from rich import print
 from rich.panel import Panel
 from rich.text import Text
 from rich.prompt import Prompt
+import re
 
 from random import randint
 
 indexListPrinted = []
+keyWords = ["Demetri", "Ivan", "Captain","Chetnakov","Sergei", "Island","Airlock","Crew", "Killed","Murder","Communication","Sleep", "Americans","Death","Spy","Attack","California"]
 
 def printer(str, style= "bold green"):
     for letter in str:  
@@ -79,4 +81,17 @@ def chooseATextToReturn(ListOfPairs):
       return ListOfPairs[indexList[chosenNumber]][0]
     count -= 1
     return ListOfPairs[0][0]
+    
 
+def keyWordCounter(s):
+  splitList = s.split()
+  splitListCleaned = []
+  for word in splitList:
+    word = word.lower()
+    word = re.sub("\W","", word)
+    splitListCleaned.append(word)
+  counter = 0
+  for word in splitListCleaned:
+    if word in keyWords:
+      counter += 1
+  return counter
