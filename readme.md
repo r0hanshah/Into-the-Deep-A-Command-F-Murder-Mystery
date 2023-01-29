@@ -10,11 +10,13 @@ Search unique keywords to slowly reveal more and more of the story. Words can be
 
 The year 1983, you are world-renowned detective Sharon Sterling. You are investigating a newly imerged submarined on the Santa Monica Pier. What will you find out?
 
+
+
     
 ## Technologies
 Project is created with:
-* Python: 3.9.12
-* rich 
+* Python: 3.10.9
+* rich library
 
 
 ## Setup
