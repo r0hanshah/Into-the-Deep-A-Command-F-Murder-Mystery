@@ -4,19 +4,27 @@ from rich import print
 from rich.panel import Panel
 from rich.text import Text
 from rich.prompt import Prompt
-import re
 from rich.progress import track
-
+from rich.console import Console
+import copy
 from random import randint
 import story
 
+import os, signal
+
 totalstory = story.story()
 
-keyWords = ["demetri", "ivan", "captain","chetnakov","sergei", "island","airlock","crew", "killed","murder","communication","sleep", "americans","death","spy","attack","california"]
+keyWords = ["demetri", "ivan", "captain","chetnakov","sergei", "island","airlock","crew", "killed","murder","communication","sleep", "americans","death","spy","attack","california", "murdered"]
 indexListPrinted = []
 totalWordsIndexEndConditions = set()
 
 
+def print_ascii_art(art, delay=0.05):
+    console = Console()
+    lines = art.split('\n')
+    for line in lines:
+        console.print(line)
+        time.sleep(delay)
 
 def printer(str, style= "bold green"):
   if str == None:
@@ -24,14 +32,51 @@ def printer(str, style= "bold green"):
   for letter in str:  
       modded_letter = Text(letter, style)
       print(modded_letter, end="", flush=True)
-      time.sleep(0.0001)
+      time.sleep(0.05)
       # make time slower later 
   print("\n")
 
 
 def preamble():
+  print(Panel("Into the [blue]Deep[/blue]: A Control-F [red]MURDER MYSTERY"))
+  time.sleep(0.03)
+  
   for i in track(range(20), description="Intercepting message..."):
-    time.sleep(0.3)  # Simulate work being done
+    time.sleep(.18)  # Simulate work being done
+
+
+  print_ascii_art("""\
+    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⣧[/yellow]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⣼⣿⡆[/yellow]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⢠⣿⠻⣿⡀[/yellow]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⣾⠇⠀⢻⣇[/yellow]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⠲⣶⣶⣶⣶⣶⣶⣶⣾⡿⠀⠀⠈⣿⣶⣶⣶⣶⣶⣶⣶⡶⠆[/yellow]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⠈⠙⠿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣾⠟⠋[/yellow]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⠈⠛⢿⣦⡄⠀⠀⠀⠀⠀⢠⣶⠿⠋[/yellow]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⢰⡿⠀⠀⠀⡀⠀⠀⠘⣿⡄[/yellow]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[red]⣀⡤[/red]⠀⠀⠀⠀⠀⠀⠀[yellow]⢀⣿⠃⢀⣴⡾⠿⣷⣄⡀⢹⣷[/yellow]⠀⠀⠀⠀⠀⠀⠀[red]⢦⣄⡀[/red]⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀[red]⢀⣀⣴⣿⠋[/red]⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⣼⣿⣶⠟⠋⠀⠀⠈⠙⢿⣶⣿⣇[/yellow]⠀⠀⠀⠀⠀⠀⠀[red]⠙⢿⣶⣄⣀[/red]⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀[red]⣠⡾⢹⣿⠟⡅[/red]⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⣰⡿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠈⠻⢿⡄[/yellow]⠀⠀⠀⠀⠀⠀⠀[red]⢨⡻⣿⡎⢿⣆[/red]⠀⠀⠀⠀
+⠀⠀[red]⢀⢶⣿⠇⣟⣥⡾⠁[/red]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⠲⢤⣄⠀⠀⠀⠀⠁[/yellow]⠀⠀⠀⠀⠀⠀⠀⠀[red]⢻⣮⣻⠸⣿⡷⣄[/red]⠀⠀
+⠀[red]⢠⡟⢸⣿⣴⣿⠏[/red]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⠙⢿⣶⣤⡀[/yellow]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[red]⢹⣿⣶⣿⡇⢹⡄[/red]⠀
+⠀[red]⣾⣷⢸⡿⣋⣴⠁[/red]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⢀⣤⣤⣄⣀⠀⠀⠀⠀⠈⢿⣿⣦⡀[/yellow]⠀⠀⠀⠀⠀⠀⠀⠀⠀[red]⢷⣍⢻⡇⣿⣷[/red]⠀
+⠀[red]⣿⣿⠘⣷⣿⠃[/red]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⢀⣴⣿⣿⣿⠟⠁⠀⠀⠀⠀⠀⠀⠹⣿⣿⣦[/yellow]⠀⠀⠀⠀⠀⠀⠀⠀[red]⠘⢿⣷⡀⣿⣿⢀[/red]
+[red]⣧⠸⣿⣼⡿⣣[/red]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⢀⣴⣿⣿⣿⣿⣅⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣿⣿⣧[/yellow]⠀⠀⠀⠀⠀⠀⠀⠀[red]⣌⠻⣿⣿⠇⣼[/red]
+[red]⣿⡆⢹⡟⣰⡿[/red]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⠙⢿⣿⠟⠉⠙⢿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⡇[/yellow]⠀⠀⠀⠀⠀⠀⠀[red]⢹⣦⠹⡿⢠⣿[/red]
+[red]⢻⣿⡄⢰⣿⠇[/red]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⠁⠀⠀⠀⠀⠹⣿⣷⣦⡀⠀⠀⠀⠀⠀⣸⣿⣿⣧[/yellow]⠀⠀⠀⠀⠀⠀⠀[red]⠈⣿⣧⢀⣿⡟[/red]
+[red]⡌⢿⣷⣾⡿⢠[/red]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⠻⣿⣿⣦⡀⠀⠀⠀⣿⣿⣿⡿[/yellow]⠀⠀⠀⠀⠀⠀⠀[red]⣏⢹⣿⣾⡿⢁[/red]
+[red]⣷⡌⢻⣿⡇⣼⡇[/red]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⣀⡀⠀⠀⠀⠀⠀⠀⠈⠻⣿⣿⣦⣀⣼⣿⣿⣿⠇[/yellow]⠀⠀⠀⠀⠀⠀[red]⢰⣿⠀⣿⠟⢡⣾[/red]
+[red]⠘⣿⣦⡙⠃⣿⡇⡀[/red]⠀⠀⠀⠀⠀⠀⠀⠀[yellow]⢰⣿⡿⢿⣿⣶⣤⣀⣀⠀⠀⠀⣈⣻⣿⣿⣿⣿⣿⠏[/yellow]⠀⠀⠀⠀⠀⠀[red]⢀⢸⣿⠀⢫⣴⣿⠃[/red]
+⠀[red]⢸⣿⣿⣦⣿⣇⢸⣆[/red]⠀⠀⠀⠀[yellow]⢀⣠⣾⡿⠉⠁⠀⠈⠛⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⡀[/yellow]⠀⠀⠀⠀⠀[red]⣰⡏⢸⣿⣴⣿⠟⡁[/red]⠀
+⠀[red]⠈⢧⣉⠻⢿⣿⠀⣿⣆[/red]⠀⠀[yellow]⢠⣾⣿⡟⠁⠀⠀⠀⠀⠀⠀⠀⠉⠉⠛⠛⠛⠛⠋⠉⠉⠻⣿⣿⡆[/yellow]⠀⠀⠀[red]⣰⣿⠁⣾⡿⠟⣡⡼⠁[/red]⠀
+⠀⠀[red]⠈⠻⣷⣤⣙⠃⢹⣿⡖⣄⡀[/red][yellow]⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉[/yellow]⠀⠀[red]⣠⢲⣿⡟⢈⣩⣴⣾⠟⠁[/red]⠀⠀
+⠀⠀⠀⠀[red]⠈⢻⣿⣿⣦⣿⣿⡌⢿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣾⢃⣾⣿⣶⣿⡿⡟⠁[/red]⠀⠀⠀⠀
+⠀⠀⠀⠀⠀[red]⠈⠳⣬⣉⣙⣛⠛⠎⠻⢿⣦⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣴⣿⠟⣁⣚⣛⣉⣩⣤⠞⠁[/red]⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀[red]⠈⠙⢻⡿⣿⣿⡿⠿⠿⠟⢛⣩⣤⣶⡶⠖⣲⣶⢶⣶⡚⠶⣶⣶⣙⡛⠻⠿⠿⠿⠿⠿⡟⠋⠁[/red]⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[red]⠑⢶⣤⣤⣴⣶⣾⣿⡿⠟⣉⣴⠟⠉⠀⠀⠈⠻⢷⣌⡙⠿⣿⣿⣷⣶⣶⣶⡶⠚⠁[/red]⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[red]⠉⠉⠉⠉⠀⠠⣾⠟⠁⠀⠀⠀⠀⠀⠀⠀⠙⢿⡦⠀⠈⠉⠉⠉[/red]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+    """)
+  
     
   printer("January 29th, 1983") 
   printer("The Santa Monica pier bustles with its usual beach bodies. As the tide of the Pacific recedes, a large metal object is revealed. \nWithin minutes, local news has arrived to capture the scene. A K-278 Komsomolets Soviet submarine has washed ashore in California.")
@@ -57,9 +102,8 @@ def counterOfWordInputted(wordChosen, scrubbed):
 
 def getContextSentence(keyword, scrubbed, wordList):
   macroList = []
-  scrubbed_two = scrubbed
+  scrubbed_two = copy.deepcopy(scrubbed)
   numberForTheLoop = counterOfWordInputted(keyword, scrubbed)
-  print(numberForTheLoop)
   if numberForTheLoop == 0:
     printer("ERROR: KEYWORD NOT FOUND", style="bold red")
     return
@@ -73,7 +117,6 @@ def getContextSentence(keyword, scrubbed, wordList):
       return
 
     # find previous period to see start of last sentence
-    printer(f"{keyword} found at index {wordIndex}")
 
     # go back to find start of last sentence, 3 extra words
     preIndex = wordIndex
@@ -83,7 +126,6 @@ def getContextSentence(keyword, scrubbed, wordList):
     while preIndex != -1:
 
       if re.search("[!?.]", wordList[preIndex]) != None:
-        print("punctuation found at index ")
         if preIndex - 2 < 0:
           preIndex = 0
         else:
@@ -105,7 +147,7 @@ def getContextSentence(keyword, scrubbed, wordList):
       else:
         postIndex += 1
 
-    print(f"pre-index: {preIndex}, post index: {postIndex}")
+    # print(f"pre-index: {preIndex}, post index: {postIndex}")
 
     for i in range(preIndex, postIndex):
       sentence += wordList[i] + " "
@@ -132,43 +174,39 @@ def keywordSearch(scrubbed,wordList):
 # takes in list of size two lists, with text and count of other keywords associated with it
 # chooses word based off probabilty and checks to make sure we haven't already printed
 def chooseATextToReturn(macrolist):
+  if macrolist == None:
+    return
   fullCount = 0
   indexList =[]
+  counterForEndCondition = 0
   for i in range(len(macrolist)):
     fullCount += macrolist[i][1]
     for j in range(macrolist[i][1]):
       indexList.append(i)
-  count = 100
+  count = 10
   while count > 1:
     chosenNumber = randint(0, fullCount - 1)
     if macrolist[indexList[chosenNumber]][2] not in indexListPrinted:
       indexListPrinted.append(macrolist[indexList[chosenNumber]][2])
       for q in range(macrolist[indexList[chosenNumber]][3], macrolist[indexList[chosenNumber]][4]):
-        totalWordsIndexEndConditions.remove(q)
+        try:
+          totalWordsIndexEndConditions.remove(q)
+        except: 
+          waster = ""
       return macrolist[indexList[chosenNumber]][0]
     count -= 1
   for q in range(macrolist[0][3], macrolist[0][4]):
-    totalWordsIndexEndConditions.remove(q)
-  return macrolist[0][0]
-    
-def chooseATextToReturnTwo(macrolist):
-  #chooses text to return based on probability of count/total count
-  print(macrolist)
-  if macrolist == None:
-    return
-  #maxFinder = 0
-  #maxRow = 0
-  #for i in range(len(macrolist)):
-  #  if maxFinder > macrolist[i][1] and macrolist[i][2] not in indexListPrinted:
-  #    maxFinder = macrolist
-  #    maxRow = i
-  row = randint(0, len(macrolist) - 1)
+    try:
+      totalWordsIndexEndConditions.remove(q)
+    except:
+      waster = "wasted"
+  if counterForEndCondition == 0:
+    counterForEndCondition += 1
+    return macrolist[0][0]
+  else:
+    return "All instances of this keyword have been exhausted."
 
-  for j in range(macrolist[row][3], macrolist[row][4]):
-    totalWordsIndexEndConditions.remove(j)
-  return macrolist[row][0]
-
-
+  
   
 
 
@@ -199,31 +237,27 @@ def main():
     word = re.sub("\W","", word)
     storyListScrubbed.append(word)
   
-  print(storyListScrubbed)
 
-  #test printing
-  # for word in storyList:
-  #   print(f"{word} ",end="")
-
-  # print()
-
-  # for word in storyListScrubbed:
-  #   print(f"{word} ",end="")
-
-  # print("\n")
 
   preamble()
 
-  while len(totalWordsIndexEndConditions) > 25:
-    printer(chooseATextToReturnTwo(keywordSearch(storyListScrubbed, storyList)))
+  while len(totalWordsIndexEndConditions) > 250:
+    printer(chooseATextToReturn(keywordSearch(storyListScrubbed, storyList)))
+  
 
   reveal()
+  
+  os.kill(os.getppid(), signal.SIGHUP)
     
 
 def reveal():
   #create a function that reveals ending text after enough text has been returned
-  printer("stuff")
-  pass
+  printer("It's all over.\nAs the last of the surplus rations disappeared, the captain's mysterious disappearance marked the beginning of the end for our crew.\nOur spirits sank as our supply of spirits dwindled, and Demetri's fits of hysteria grew wilder by the day. I knew something was off about him, so one night I decided to sneak into his chambers and investigate. \n\nAs I sifted through his chests, I found tomes written in foreign tongues, but no signs of his family. Strange symbols resembling heinous fish beasts adorned the pages. And then, hidden in plain sight, I saw it - the captain's pocket watch. It was clear to me that Demetri had killed Chetnakov. But as I made my escape, the floorboards beneath me creaked, alerting Demetri to my presence. He awoke in a rage, screaming and cursing. \n\nI fled for my life, slamming the door shut behind me, but he tore it open with ease. I made it to the captain's room, where Ivan and Sergei were waiting for me. We locked ourselves inside, but Demetri was breaking down the door with manic strength. He screamed about throwing us out of the airlock. We knew we couldn't overpower him. As I write this, the door is about to give way. My fate, and that of my crewmates, is uncertain. But I had to leave this warning for whoever may come across this -mfeouhfo iwrhfvhfw whoiufDwfWHUPdufvsgvh n.fgyuiwot")
+  
+  printer("Sharon Sterling arises from the computer with the true knowledge of what happened that fateful night.")
+  printer("She exits the submarine, and the ship's computer interface shuts down forever.")
+  for i in track(range(20), description="Self Destructing..."):
+    time.sleep(.08)  # Simulate work being done
   
 
 
