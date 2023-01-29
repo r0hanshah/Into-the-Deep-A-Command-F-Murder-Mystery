@@ -6,6 +6,7 @@ from rich.text import Text
 from rich.prompt import Prompt
 from rich.progress import track
 from rich.console import Console
+from rich.align import Align
 import copy
 from random import randint
 import story
@@ -23,11 +24,8 @@ def print_ascii_art(art, delay=0.05):
     console = Console()
     lines = art.split('\n')
     for line in lines:
-        console.print(line)
+        console.print(Align(line, align= "center"))
         time.sleep(delay)
-
-debug = True
-printerSpeed = 0 if debug else 0.05
 
 def printer(str, style= "bold green"):
   if str == None:
@@ -35,13 +33,13 @@ def printer(str, style= "bold green"):
   for letter in str:  
       modded_letter = Text(letter, style)
       print(modded_letter, end="", flush=True)
-      time.sleep(printerSpeed)
+      time.sleep(0.05)
       # make time slower later 
   print("\n")
 
 
 def preamble():
-  print(Panel("Into the [blue]Deep[/blue]: A Control-F [red]MURDER MYSTERY"))
+  print(Panel(Align("Into the [blue]Deep[/blue]: A Control-F [red]MURDER MYSTERY", align= "center")))
   time.sleep(0.03)
   
   for i in track(range(20), description="Intercepting message..."):
@@ -104,9 +102,9 @@ def counterOfWordInputted(wordChosen, scrubbed):
 
 
 def getContextSentence(keyword, scrubbed, wordList):
-  #if keyword == "superior":
-  #  printer("ERROR: KEYWORD NOT FOUND", style="bold red")
-  #   return
+  if keyword == "superior":
+    printer("ERROR: KEYWORD NOT FOUND", style="bold red")
+    return
   macroList = []
   scrubbed_two = copy.deepcopy(scrubbed)
   numberForTheLoop = counterOfWordInputted(keyword, scrubbed)
@@ -191,8 +189,7 @@ def chooseATextToReturn(macrolist):
       indexList.append(i)
   count = 10
   while count > 1:
-    if fullCount == 0:
-      return macrolist[0][0]
+    chosenNumber = randint(0, fullCount - 1)
     if macrolist[indexList[chosenNumber]][2] not in indexListPrinted:
       indexListPrinted.append(macrolist[indexList[chosenNumber]][2])
       for q in range(macrolist[indexList[chosenNumber]][3], macrolist[indexList[chosenNumber]][4]):
