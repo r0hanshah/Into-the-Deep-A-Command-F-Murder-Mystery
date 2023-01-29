@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import time, sys, random  
+import time, sys, random, re
 from rich import print
 from rich.panel import Panel
 from rich.text import Text
@@ -35,35 +35,54 @@ def preamble():
   printer("CONCEALING AND ENCRYPTING CREW LOGS")
   printer("FOR THE PROTECTION OF STATE SECRETS, CREW LOGS ARE ONLY AVAILABLE THROUGH KEYWORD SEARCH. WORKERS OF THE WORLD, UNITE.")
 
-def keywordSearch():
+def getContextSentence(keyword, scrubbed, wordList):
+  try:
+    wordIndex = scrubbed.index(keyword)
+  except:
+    printer("ERROR: KEYWORD NOT FOUND", style="bold red")
+    return
+
+  # find previous period to see start of last sentence
+  printer(f"{keyword} found at index {wordIndex}")
+
+  # go back to find start of last sentence, 3 extra words
+  preIndex = wordIndex
+  postIndex = wordIndex
+
+  while preIndex != -1:
+
+    if re.search("[!?.]", wordList[preIndex]) != None:
+      print("punctuation found at index ")
+      if preIndex - 2 < 0:
+        preIndex = 0
+      else:
+        preIndex -= 2;
+      break
+
+    else:
+      preIndex -= 1
+
+  while postIndex != len(wordList):
+
+    if re.search("[!?.]", wordList[postIndex]) != None:
+      if postIndex + 4 >= len(wordList):
+        postIndex = len(wordList)
+      else:
+        postIndex += 4
+      break
+
+    else:
+      postIndex += 1
+
+  print(f"pre-index: {preIndex}, post index: {postIndex}")
+
+  for i in range(preIndex, postIndex):
+    print(wordList[i], end=" ")
+
+
+def keywordSearch(scrubbed,wordList):
   chosenWord = input("ENTER KEYWORD: ")
-
-
-
-preamble()
-keywordSearch()
-
-
-keywords = {"test",}
-
-story = "yadda yadda yadda important words here. This sentence contains test, the whole thing should be present. These should show, these should not."
-storyList = story.split()
-print(storyList)
-
-def getContextSentence(keyword):
-  wordIndex = storyList.index(keyword)
-
-  if wordIndex == -1:
-    printer("ERROR: KEYWORD NOT FOUND", style ="bold red")
-  else:
-    # find previous period to see start of las
-    # 
-    # t sentence
-    printer(f"{keyword} found at index {wordIndex}")
-
-
-getContextSentence("test")
-
+  getContextSentence(chosenWord, scrubbed, wordList)
 
 # takes in list of size two lists, with text and count of other keywords associated with it
 # chooses word based off probabilty and checks to make sure we haven't already printed
@@ -95,3 +114,35 @@ def keyWordCounter(s):
     if word in keyWords:
       counter += 1
   return counter
+
+def main():
+  keywords = {"test",}
+  story = "yadda yadda yadda important words here. This sentence contains test, the whole thing should be present. These should show, these should not."
+  storyList = story.split()
+  storyListScrubbed = []
+
+  #scrubbing storyList
+  for word in storyList:
+    word = word.lower()
+    word = re.sub("\W","", word)
+    storyListScrubbed.append(word)
+
+
+  #test printing
+  for word in storyList:
+    print(f"{word} ",end="")
+
+  print()
+
+  for word in storyListScrubbed:
+    print(f"{word} ",end="")
+
+  print("\n")
+
+  # preamble()
+
+  while True:
+    keywordSearch(storyListScrubbed, storyList)
+
+
+main()
