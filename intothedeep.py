@@ -244,7 +244,7 @@ def main():
 
   preamble()
 
-  while len(totalWordsIndexEndConditions) > 250:
+  while len(totalWordsIndexEndConditions) > 350:
     printer(chooseATextToReturn(keywordSearch(storyListScrubbed, storyList)))
   
 
