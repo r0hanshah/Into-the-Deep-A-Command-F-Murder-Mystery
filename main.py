@@ -42,6 +42,41 @@ def getContextSentence(keyword, scrubbed, wordList):
   # find previous period to see start of last sentence
   printer(f"{keyword} found at index {wordIndex}")
 
+  # go back to find start of last sentence, 3 extra words
+  preIndex = wordIndex
+  postIndex = wordIndex
+
+  while preIndex != -1:
+
+    if re.search("[!?.]", wordList[preIndex]) != None:
+      print("punctuation found at index ")
+      if preIndex - 2 < 0:
+        preIndex = 0
+      else:
+        preIndex -= 2;
+      break
+
+    else:
+      preIndex -= 1
+
+  while postIndex != len(wordList):
+
+    if re.search("[!?.]", wordList[postIndex]) != None:
+      if postIndex + 4 >= len(wordList):
+        postIndex = len(wordList)
+      else:
+        postIndex += 4
+      break
+
+    else:
+      postIndex += 1
+
+  print(f"pre-index: {preIndex}, post index: {postIndex}")
+
+  for i in range(preIndex, postIndex):
+    print(wordList[i], end=" ")
+
+
 def keywordSearch(scrubbed,wordList):
   chosenWord = input("ENTER KEYWORD: ")
   getContextSentence(chosenWord, scrubbed, wordList)
@@ -62,16 +97,18 @@ def main():
   storyList = story.split()
   storyListScrubbed = []
 
+  #scrubbing storyList
   for word in storyList:
     word = word.lower()
     word = re.sub("\W","", word)
     storyListScrubbed.append(word)
 
 
+  #test printing
   for word in storyList:
     print(f"{word} ",end="")
 
-  print("\n")
+  print()
 
   for word in storyListScrubbed:
     print(f"{word} ",end="")
@@ -79,7 +116,9 @@ def main():
   print("\n")
 
   # preamble()
-  keywordSearch(storyListScrubbed, storyList)
+
+  while True:
+    keywordSearch(storyListScrubbed, storyList)
 
 
 main()
