@@ -104,9 +104,9 @@ def counterOfWordInputted(wordChosen, scrubbed):
 
 
 def getContextSentence(keyword, scrubbed, wordList):
-  if keyword == "superior":
-    printer("ERROR: KEYWORD NOT FOUND", style="bold red")
-    return
+  #if keyword == "superior":
+  #  printer("ERROR: KEYWORD NOT FOUND", style="bold red")
+  #   return
   macroList = []
   scrubbed_two = copy.deepcopy(scrubbed)
   numberForTheLoop = counterOfWordInputted(keyword, scrubbed)
@@ -191,7 +191,8 @@ def chooseATextToReturn(macrolist):
       indexList.append(i)
   count = 10
   while count > 1:
-    chosenNumber = randint(0, fullCount - 1)
+    if fullCount == 0:
+      return macrolist[0][0]
     if macrolist[indexList[chosenNumber]][2] not in indexListPrinted:
       indexListPrinted.append(macrolist[indexList[chosenNumber]][2])
       for q in range(macrolist[indexList[chosenNumber]][3], macrolist[indexList[chosenNumber]][4]):
