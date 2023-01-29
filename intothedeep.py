@@ -26,13 +26,16 @@ def print_ascii_art(art, delay=0.05):
         console.print(line)
         time.sleep(delay)
 
+debug = True
+printerSpeed = 0 if debug else 0.05
+
 def printer(str, style= "bold green"):
   if str == None:
     return
   for letter in str:  
       modded_letter = Text(letter, style)
       print(modded_letter, end="", flush=True)
-      time.sleep(0.05)
+      time.sleep(printerSpeed)
       # make time slower later 
   print("\n")
 
